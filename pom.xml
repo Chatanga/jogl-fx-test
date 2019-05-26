@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.hihan</groupId>
+    <artifactId>jogl-fx</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+
+    <name>JOGL-FX</name>
+    <description>OpenGL + JavaFX</description>
+    <url>https://github.com/Chatanga/jogl-fx</url>
+    <inceptionYear>2019</inceptionYear>
+    <developers>
+        <developer>
+            <id>Chatanga</id>
+            <name>Florent Lioult</name>
+            <url>https://github.com/chatanga</url>
+        </developer>
+    </developers>
+
+    <properties>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.jogamp.jogl</groupId>
+            <artifactId>jogl-all-main</artifactId>
+            <version>2.3.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jogamp.gluegen</groupId>
+            <artifactId>gluegen-rt</artifactId>
+            <version>2.3.2</version>
+        </dependency>
+        <!--
+        <dependency>
+            <groupId>net.java.dev.jogl</groupId>
+            <artifactId>jogl</artifactId>
+            <version>1.1.1-rc6</version>
+        </dependency>
+        <dependency>
+            <groupId>net.java.dev.gluegen</groupId>
+            <artifactId>gluegen-rt-linux-i586</artifactId>
+            <version>1.0b05</version>
+        </dependency>
+        -->
+    </dependencies>
+
+    <build>
+
+        <!-- To check versions: mvn versions:display-plugin-updates -->
+        <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>3.0.0-M2</version>
+                <executions>
+                    <execution>
+                        <id>enforce-maven</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireMavenVersion>
+                                    <version>3.0.5</version>
+                                </requireMavenVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.6.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <mainClass>org.hihan.joglfx.Main</mainClass>
+                </configuration>
+            </plugin>
+
+        </plugins>
+
+    </build>
+
+</project>
