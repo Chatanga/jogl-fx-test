@@ -1,2 +1,2 @@
 # jogl-fx-test
-OpenGL + JavaFX  = ?
+OpenGL + JavaFX = ?

@@ -4,6 +4,7 @@ import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLContext;
 import com.jogamp.opengl.GLDrawableFactory;
+import com.jogamp.opengl.GLException;
 import java.nio.IntBuffer;
 import java.util.Deque;
 import java.util.LinkedList;
@@ -275,7 +276,7 @@ public class JOGL {
     }
 
     public static void resetStates(State... states) {
-        checkIsInQuatumRendererThread();
+        checkIsInQuantumRendererThread();
         GL gl = getGL();
         for (State state : states) {
             state.reset(gl);
@@ -283,7 +284,7 @@ public class JOGL {
     }
 
     public static void saveStates(State... states) {
-        checkIsInQuatumRendererThread();
+        checkIsInQuantumRendererThread();
         GL gl = getGL();
         for (State state : states) {
             state.save(gl);
@@ -292,7 +293,7 @@ public class JOGL {
     }
 
     public static void saveState() {
-        checkIsInQuatumRendererThread();
+        checkIsInQuantumRendererThread();
         GL gl = getGL();
         if (!savedStates.isEmpty()) {
             State state = savedStates.pop();
@@ -311,15 +312,19 @@ public class JOGL {
     private static GLContext glContext;
 
     public static GL getGL() {
-        checkIsInQuatumRendererThread();
+        checkIsInQuantumRendererThread();
         if (glContext == null) {
-            glContext = GLDrawableFactory.getDesktopFactory().createExternalGLContext();
+            try {
+                glContext = GLDrawableFactory.getDesktopFactory().createExternalGLContext();
+            } catch (GLException e) {
+                throw new RuntimeException("Failed to retrieve the current OpenGL context (in Linux, using '-Dprism.forceGPU=true' should solve the problem.");
+            }
             glContext.makeCurrent();
         }
         return glContext.getGL();
     }
 
-    public static void checkIsInQuatumRendererThread() {
+    public static void checkIsInQuantumRendererThread() {
         if (!isInQuatumRendererThread()) {
             throw new IllegalStateException();
         }

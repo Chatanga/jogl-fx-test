@@ -4,7 +4,6 @@ import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.util.texture.Texture;
 import com.jogamp.opengl.util.texture.TextureIO;
-import com.sun.prism.image.ViewPort;
 import java.io.File;
 import java.io.IOException;
 import static org.hihan.joglfx.JOGL.getInt;

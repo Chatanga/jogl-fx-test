@@ -1,17 +1,17 @@
 package org.hihan.joglfx;
 
-import com.jogamp.opengl.GL;
 import static com.jogamp.opengl.GL.GL_ARRAY_BUFFER;
 import static com.jogamp.opengl.GL.GL_FALSE;
 import static com.jogamp.opengl.GL.GL_FLOAT;
+import static com.jogamp.opengl.GL.GL_NONE;
 import static com.jogamp.opengl.GL.GL_STATIC_DRAW;
 import static com.jogamp.opengl.GL.GL_TRIANGLES;
-import com.jogamp.opengl.GL2ES2;
 import static com.jogamp.opengl.GL2ES2.GL_COMPILE_STATUS;
 import static com.jogamp.opengl.GL2ES2.GL_FRAGMENT_SHADER;
 import static com.jogamp.opengl.GL2ES2.GL_INFO_LOG_LENGTH;
 import static com.jogamp.opengl.GL2ES2.GL_LINK_STATUS;
 import static com.jogamp.opengl.GL2ES2.GL_VERTEX_SHADER;
+import static com.jogamp.opengl.GL2ES2.*;
 import com.jogamp.opengl.GL3;
 import static com.jogamp.opengl.GL3ES3.GL_GEOMETRY_SHADER;
 import com.jogamp.opengl.util.GLBuffers;
@@ -63,12 +63,12 @@ public class ColoredSquare {
 
     private int vbo;
 
-    private final int vao;
+    private int vao;
 
     public ColoredSquare(GL3 gl) {
         initializeProgram(gl);
         initializeVertexBuffer(gl);
-        vao = JOGL.create(vaos -> gl.glGenVertexArrays(1, vaos));
+        initializeVertexArrayObject(gl);
     }
 
     private void initializeProgram(GL3 gl) {
@@ -157,30 +157,40 @@ public class ColoredSquare {
         vbo = JOGL.create(vbos -> gl.glGenBuffers(1, vbos));
 
         gl.glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        gl.glBufferData(GL_ARRAY_BUFFER, vertexBuffer.capacity() * Float.BYTES, vertexBuffer, GL_STATIC_DRAW);
-        gl.glBindBuffer(GL_ARRAY_BUFFER, 0);
+        {
+            gl.glBufferData(GL_ARRAY_BUFFER, vertexBuffer.capacity() * Float.BYTES, vertexBuffer, GL_STATIC_DRAW);
+        }
+        gl.glBindBuffer(GL_ARRAY_BUFFER, GL_NONE);
+    }
+
+    private void initializeVertexArrayObject(GL3 gl) {
+        vao = JOGL.create(vaos -> gl.glGenVertexArrays(1, vaos));
+
+        gl.glBindVertexArray(vao);
+        {
+            gl.glBindBuffer(GL_ARRAY_BUFFER, vbo);
+            {
+                gl.glEnableVertexAttribArray(POSITION);
+                gl.glVertexAttribPointer(POSITION, 2, GL_FLOAT, false, 5 * 4, 0);
+
+                gl.glEnableVertexAttribArray(COLOR);
+                gl.glVertexAttribPointer(COLOR, 3, GL_FLOAT, false, 5 * 4, 2 * 4);
+            }
+            gl.glBindBuffer(GL_ARRAY_BUFFER, GL_NONE);
+        }
+        gl.glBindVertexArray(GL_NONE);
     }
 
     public void display(GL3 gl) {
-        gl.glDisable(GL.GL_SCISSOR_TEST);
-
-        gl.glBindVertexArray(vao);
         gl.glUseProgram(program);
-
-        gl.glBindBuffer(GL_ARRAY_BUFFER, vbo);
-
-        gl.glEnableVertexAttribArray(POSITION);
-        gl.glVertexAttribPointer(POSITION, 2, GL_FLOAT, false, 5 * 4, 0);
-
-        gl.glEnableVertexAttribArray(COLOR);
-        gl.glVertexAttribPointer(COLOR, 3, GL_FLOAT, false, 5 * 4, 2 * 4);
-
-        gl.glDrawArrays(GL_TRIANGLES, 0, 6);
-
-        gl.glDisableVertexAttribArray(POSITION);
-        gl.glDisableVertexAttribArray(COLOR);
-
-        gl.glUseProgram(0);
+        {
+            gl.glBindVertexArray(vao);
+            {
+                gl.glDrawArrays(GL_TRIANGLES, 0, 6);
+            }
+            gl.glBindVertexArray(GL_NONE);
+        }
+        gl.glUseProgram(GL_NONE);
     }
 
     public void dispose(GL3 gl) {
@@ -188,24 +198,24 @@ public class ColoredSquare {
     }
 
     private static IntBuffer newDirectIntBuffer(int size) {
-        return (IntBuffer) GLBuffers.newDirectGLBuffer(GL2ES2.GL_INT, size);
+        return (IntBuffer) GLBuffers.newDirectGLBuffer(GL_INT, size);
     }
 
     private static IntBuffer newDirectIntBuffer(int[] ints) {
-        IntBuffer buffer = (IntBuffer) GLBuffers.newDirectGLBuffer(GL2ES2.GL_INT, ints.length);
+        IntBuffer buffer = (IntBuffer) GLBuffers.newDirectGLBuffer(GL_INT, ints.length);
         buffer.put(ints);
         buffer.rewind();
         return buffer;
     }
 
     private static FloatBuffer newDirectFloatBuffer(float[] floats) {
-        FloatBuffer buffer = (FloatBuffer) GLBuffers.newDirectGLBuffer(GL2ES2.GL_FLOAT, floats.length);
+        FloatBuffer buffer = (FloatBuffer) GLBuffers.newDirectGLBuffer(GL_FLOAT, floats.length);
         buffer.put(floats);
         buffer.rewind();
         return buffer;
     }
 
     private static ByteBuffer newDirectByteBuffer(int size) {
-        return (ByteBuffer) GLBuffers.newDirectGLBuffer(GL2ES2.GL_BYTE, size);
+        return (ByteBuffer) GLBuffers.newDirectGLBuffer(GL_BYTE, size);
     }
 }

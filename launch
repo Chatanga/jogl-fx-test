@@ -1,0 +1,4 @@
+#! /bin/bash
+export JAVA_HOME="$HOME/Applications/jdk1.8.0_112"
+export MAVEN_OPTS="-Dprism.forceGPU=true"
+mvn exec:java
